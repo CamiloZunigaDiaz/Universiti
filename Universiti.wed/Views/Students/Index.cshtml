@@ -1,0 +1,38 @@
+﻿@model List<Universiti.wed.Models.Student>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Bienvenido al Index</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>LastName</th>
+            <th>FirstMidName</th>
+            <th>EnrollmentDate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.LastName</td>
+                <td>@item.FirstMidName</td>
+                <td>@item.EnrollmentDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if(ViewBag.Data != null && ViewBag.Message != null)
+{
+    
+    <ul>
+        <li>@ViewBag.Data</li>
+        <li>@ViewBag.Message</li>
+    </ul>
+}
