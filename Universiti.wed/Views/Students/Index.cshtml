@@ -1,10 +1,26 @@
-﻿@model List<Universiti.wed.Models.Student>
+﻿@using PagedList.Mvc;
+@model PagedList.IPagedList<Universiti.BL.DTOs.StudentDTO>
 
 @{
     ViewBag.Title = "Index";
+
 }
 
 <h2>Bienvenido al Index</h2>
+@Html.ActionLink("New", "Create", "Students", null, new { @class = "btn btn-sm btn-primary" })
+
+
+@using (Html.BeginForm("Index", "Students", FormMethod.Get))
+{
+                <p>
+                    <select name="PageSize" id="Pagesize" class="form-control">
+                        <option>@if ((int)ViewBag.PageSize == 10) {@Html.Raw("selected")}>10</option>
+                        <option>@if ((int)ViewBag.PageSize == 15) {@Html.Raw("selected")}>15</option>
+                    </select>
+                    <br/>
+                    <input type="submit" value="Aplicar" class="btn btn-primary"/>
+                </p>
+}
 
 <table class="table table-bordered">
     <thead>
@@ -13,6 +29,8 @@
             <th>LastName</th>
             <th>FirstMidName</th>
             <th>EnrollmentDate</th>
+            <th>Options</th>
+
         </tr>
     </thead>
     <tbody>
@@ -23,16 +41,53 @@
                 <td>@item.LastName</td>
                 <td>@item.FirstMidName</td>
                 <td>@item.EnrollmentDate</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", "Students", new { id = item.ID }, new { @class = "btn btn-sm btn-info" })
+                    @Html.ActionLink("Courses", "Index", "Students", new { studentId = item.ID }, new { @class = "btn btn-sm btn-primary" })
+                    @Html.ActionLink("Delete", "Delete", "Students", new { id = item.ID }, new { @class = "btn btn-sm btn-primary" })
+                </td>
+
             </tr>
         }
     </tbody>
 </table>
 
-@if(ViewBag.Data != null && ViewBag.Message != null)
-{
+<br/>
+Page @(Model.PageCount<Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount;
+<br/>
+Total Item Count @Model.TotalItemCount
+@Html.PagedListPager(Model, page => Url.Action("Index", "Students", new { page, pageSize = ViewBag.PageSize}));
     
+
+@if (ViewBag.Data != null && ViewBag.Message != null)
+{
+
     <ul>
         <li>@ViewBag.Data</li>
         <li>@ViewBag.Message</li>
     </ul>
+}
+
+@if (ViewBag.Courses != null)
+
+{   
+    <h1>Courses</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Credits</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<Universiti.BL.DTOs.CourseDTO>) ViewBag.Courses)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Credits</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 }

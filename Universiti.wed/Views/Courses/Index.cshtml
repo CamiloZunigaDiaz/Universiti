@@ -1,0 +1,54 @@
+﻿@using PagedList.Mvc;
+
+@model PagedList.IPagedList<Universiti.BL.DTOs.CourseDTO>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", "Courses", null, new { @class = "btn btn-primary" })
+</p>
+
+@using (Html.BeginForm("Index", "Courses", FormMethod.Get))
+{
+    <p>
+        <select name="PageSize" id="Pagesize" class="form-control">
+            <option>@if ((int)ViewBag.PageSize == 10)
+            {@Html.Raw("selected")}>10</option>
+            <option>@if ((int)ViewBag.PageSize == 15)
+            {@Html.Raw("selected")}>15</option>
+        </select>
+        <br />
+        <input type="submit" value="Aplicar" class="btn btn-primary" />
+    </p>
+}
+<table class="table table-bordered">
+    <tr>
+        <th>CourseID</th>
+        <th>Title</th>
+        <th>Credits</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.CourseID)</td>
+            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+            <td>@Html.DisplayFor(modelItem => item.Credits)</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+    }
+
+</table>
+<br />
+Page @(Model.PageCount<Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount;
+<br />
+Total Item Count @Model.TotalItemCount
+@Html.PagedListPager(Model, page => Url.Action("Index", "Courses", new { page, pageSize = ViewBag.PageSize }));
