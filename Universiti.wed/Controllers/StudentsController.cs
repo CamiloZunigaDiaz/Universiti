@@ -141,10 +141,7 @@ namespace Universiti.wed.Controllers
             try
             {
                 if (!ModelState.IsValid)
-                    return View(student);
-
-                if (student.EnrollmentDate > DateTime.Now)
-                    throw new Exception("La fecha de la matricula no puede ser mayor a la fecha actual");
+                    return View(student);               
 
 
                 //var studentModel = context.Students.Where(x => x.ID == student.ID).Select(x => x).FirstOrDefault();

@@ -76,5 +76,71 @@ namespace Universiti.wed.Controllers
 
 
         }
+
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+
+            var course = context.Courses.Where(x => x.CourseID == id)
+                           .Select(x => new CourseDTO
+                           {
+                               CourseID = x.CourseID,
+                               Title = x.Title,
+                               Credits = x.Credits
+
+                           }).FirstOrDefault();
+
+
+
+            return View(course);
+        }
+
+
+        [HttpPost]
+        public ActionResult Edit(CourseDTO course)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View(course);
+
+                
+                //var studentModel = context.Students.Where(x => x.ID == student.ID).Select(x => x).FirstOrDefault();
+                var courseModel = context.Courses.FirstOrDefault(x => x.CourseID == course.CourseID);
+
+                //campos que se van a modificar
+                //sobreescribir las propiedades del modelo de base de datos
+                
+                courseModel.Title = course.Title;
+                courseModel.Credits = course.Credits;
+
+                //aplicar los cambios en base de datos
+                context.SaveChanges();
+
+
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            return View(course);
+
+
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            if (!context.Enrollments.Any(x => x.CourseID == id) && !context.CourseInstructors.Any(j => j.CourseID == id))
+            {
+                var courseModel = context.Courses.FirstOrDefault(x => x.CourseID == id);
+                context.Courses.Remove(courseModel);
+                context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
