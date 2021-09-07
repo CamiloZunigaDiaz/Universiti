@@ -10,26 +10,27 @@ using Universiti.BL.Models;
 
 namespace Universiti.wed.Controllers
 {
-    public class CoursesController : Controller
+    public class InstructorsController : Controller
     {
-
         private readonly UniversitiContext context = new UniversitiContext();
 
 
         [HttpGet]
-        public ActionResult Index( int? pageSize, int? page)
+        public ActionResult Index(int? pageSize, int? page)
         {
 
-            var query = context.Courses.ToList();
+            var query = context.Instructors.ToList();
 
-            var courses = query.Select(x => new CourseDTO
+            var instructors = query.Select(x => new InstructorDTO
             {
-                CourseID = x.CourseID,
-                Title = x.Title,
-                Credits = x.Credits
+                ID = x.ID,
+                LastName = x.LastName,
+                FirstMidName = x.FirstMidName,
+                HireDate = x.HireDate
+
 
             }).ToList();
-          
+
 
             #region paginacion
             pageSize = (pageSize ?? 10);
@@ -37,7 +38,7 @@ namespace Universiti.wed.Controllers
 
             ViewBag.PageSize = pageSize;
             #endregion
-            return View(courses.ToPagedList(page.Value, pageSize.Value)); 
+            return View(instructors.ToPagedList(page.Value, pageSize.Value));
         }
 
         [HttpGet]
@@ -47,20 +48,21 @@ namespace Universiti.wed.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(CourseDTO course)
+        public ActionResult Create(InstructorDTO instructor)
         {
             try
             {
                 if (!ModelState.IsValid)
-                    return View(course);
-               
+                    return View(instructor);
 
 
-                context.Courses.Add(new Course
+
+                context.Instructors.Add(new Instructor
                 {
-                    CourseID = course.CourseID,
-                    Title = course.Title,
-                    Credits = course.Credits
+                    ID= instructor.ID,
+                    LastName = instructor.LastName,
+                    FirstMidName = instructor.FirstMidName,
+                    HireDate = instructor.HireDate                   
 
                 });
                 context.SaveChanges();
@@ -74,7 +76,7 @@ namespace Universiti.wed.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View(course);
+            return View(instructor);
 
 
         }
@@ -83,38 +85,39 @@ namespace Universiti.wed.Controllers
         public ActionResult Edit(int id)
         {
 
-            var course = context.Courses.Where(x => x.CourseID == id)
-                           .Select(x => new CourseDTO
+            var instructor = context.Instructors.Where(x => x.ID == id)
+                           .Select(x => new InstructorDTO
                            {
-                               CourseID = x.CourseID,
-                               Title = x.Title,
-                               Credits = x.Credits
+                               ID = x.ID,
+                               LastName = x.LastName,
+                               FirstMidName = x.FirstMidName,
+                               HireDate = x.HireDate
 
                            }).FirstOrDefault();
 
 
 
-            return View(course);
+            return View(instructor);
         }
 
 
         [HttpPost]
-        public ActionResult Edit(CourseDTO course)
+        public ActionResult Edit(InstructorDTO instructor)
         {
             try
             {
                 if (!ModelState.IsValid)
-                    return View(course);
+                    return View(instructor);
 
-                
+
                 //var studentModel = context.Students.Where(x => x.ID == student.ID).Select(x => x).FirstOrDefault();
-                var courseModel = context.Courses.FirstOrDefault(x => x.CourseID == course.CourseID);
+                var instructorModel = context.Instructors.FirstOrDefault(x => x.ID == instructor.ID);
 
                 //campos que se van a modificar
                 //sobreescribir las propiedades del modelo de base de datos
-                
-                courseModel.Title = course.Title;
-                courseModel.Credits = course.Credits;
+
+                instructorModel.LastName = instructor.LastName;
+                instructorModel.FirstMidName = instructor.FirstMidName;
 
                 //aplicar los cambios en base de datos
                 context.SaveChanges();
@@ -128,7 +131,7 @@ namespace Universiti.wed.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View(course);
+            return View(instructor);
 
 
         }
@@ -136,10 +139,10 @@ namespace Universiti.wed.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            if (!context.Enrollments.Any(x => x.CourseID == id) && !context.CourseInstructors.Any(j => j.CourseID == id))
+            if (!context.Departments.Any(x => x.InstructorID == id) && !context.CourseInstructors.Any(j => j.InstructorID == id)&& !context.officeAssignments.Any(i => i.InstructorID == id))
             {
-                var courseModel = context.Courses.FirstOrDefault(x => x.CourseID == id);
-                context.Courses.Remove(courseModel);
+                var instructorModel = context.Instructors.FirstOrDefault(x => x.ID == id);
+                context.Instructors.Remove(instructorModel);
                 context.SaveChanges();
             }
             return RedirectToAction("Index");
