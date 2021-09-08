@@ -16,7 +16,7 @@ namespace Universiti.wed.Controllers
 
 
         [HttpGet]
-        public ActionResult Index(int? pageSize, int? page)
+        public ActionResult Index(int ? instructorid, int? pageSize, int? page)
         {
 
             var query = context.Instructors.ToList();
@@ -31,6 +31,22 @@ namespace Universiti.wed.Controllers
 
             }).ToList();
 
+            if (instructorid != null)
+            {
+
+                var departments = (from d in context.Departments
+                               join i in context.Instructors on d.InstructorID equals i.ID
+                               where d.DepartmentID == instructorid
+                               select new DepartmentDTO
+                               {
+                                   DepartmentID = d.DepartmentID,
+                                   Name = d.Name                                  
+
+                               }).ToList();
+
+                ViewBag.Departments = departments;
+
+            }
 
             #region paginacion
             pageSize = (pageSize ?? 10);
@@ -139,7 +155,7 @@ namespace Universiti.wed.Controllers
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            if (!context.Departments.Any(x => x.InstructorID == id) && !context.CourseInstructors.Any(j => j.InstructorID == id)&& !context.officeAssignments.Any(i => i.InstructorID == id))
+            if (!context.Departments.Any(x => x.InstructorID == id) && !context.CourseInstructors.Any(j => j.InstructorID == id) && !context.officeAssignments.Any(i => i.InstructorID == id))
             {
                 var instructorModel = context.Instructors.FirstOrDefault(x => x.ID == id);
                 context.Instructors.Remove(instructorModel);

@@ -1,4 +1,5 @@
-﻿@using PagedList.Mvc;
+﻿
+@using PagedList.Mvc;
 @model PagedList.IPagedList<Universiti.BL.DTOs.DepartmentDTO>
 
 @{
@@ -8,9 +9,9 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("New", "Create", "Departaments", null, new { @class = "btn btn-sm btn-primary" })
 </p>
-@using (Html.BeginForm("Index", "Departmente", FormMethod.Get))
+@using (Html.BeginForm("Index", "Department", FormMethod.Get))
 {
     <p>
         <select name="PageSize" id="Pagesize" class="form-control">
@@ -29,35 +30,25 @@
 }
 <table class="table table-bordered">
     <tr>
-        <th>@Html.DisplayNameFor(model => model.DepartmentID)</th>
-        <th>@Html.DisplayNameFor(model => model.Name)</th>
-        <th>
-            @Html.DisplayNameFor(model => model.Budget)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StartDate)
-        </th>
-        <th></th>
+        <th>DepartmentID</th>
+        <th>Name</th>
+        <th>Budget</th>
+        <th>.StartDate</th>
+        <th>FullName</th>
     </tr>
 
     @foreach (var item in Model)
     {
         <tr>
-            <td>@Html.DisplayFor(modelItem => item.DepartmentID)
-            </td>
+            <td>@Html.DisplayFor(modelItem => item.DepartmentID)</td>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Budget)</td>
+            <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+            <td>@Html.DisplayFor(modelItem => item.Instructor.FullName)</td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Budget)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit", "Departament", new { id = item.DepartmentID }) |
+
+                @Html.ActionLink("Delete", "Delete", "Departament", new { id = item.DepartmentID })
             </td>
         </tr>
     }

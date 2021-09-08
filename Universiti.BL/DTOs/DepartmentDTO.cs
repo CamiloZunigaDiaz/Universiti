@@ -19,6 +19,10 @@ namespace Universiti.BL.DTOs
         public decimal Budget { get; set; }
 
         [Display(Name = "StartDate")]
+        [DataType(DataType.DateTime)]
         public DateTime StartDate { get; set; }
+        public int InstructorID { get; set; }
+
+        public InstructorDTO Instructor { get; set; }
     }
 }

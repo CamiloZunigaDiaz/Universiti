@@ -15,35 +15,38 @@ namespace Universiti.wed.Controllers
         private readonly UniversitiContext context = new UniversitiContext();
 
 
-        [HttpGet]
         public ActionResult Index(int? pageSize, int? page)
         {
-
-            var query = context.Departments.ToList();
-
-            var department = query.Select(x => new DepartmentDTO
+            var query = context.Departments.Include("Instructor").ToList();
+            var departments = query.Select(x => new DepartmentDTO
             {
                 DepartmentID = x.DepartmentID,
                 Name = x.Name,
                 Budget = x.Budget,
-                StartDate = x.StartDate
+                StartDate = x.StartDate,
+                InstructorID = x.InstructorID,
+                Instructor = new InstructorDTO
+                {
+                    FirstMidName = x.Instructor.FirstMidName,
+                    LastName = x.Instructor.LastName
+                }
+
+            });
 
 
-            }).ToList();
-
-
-            #region paginacion
             pageSize = (pageSize ?? 10);
             page = (page ?? 1);
+            ViewBag.pageSize = pageSize;
 
-            ViewBag.PageSize = pageSize;
-            #endregion
-            return View(department.ToPagedList(page.Value, pageSize.Value));
+
+
+            return View(departments.ToPagedList(page.Value, pageSize.Value));
         }
 
         [HttpGet]
         public ActionResult Create()
         {
+            LoadData();
             return View();
         }
 
@@ -52,100 +55,110 @@ namespace Universiti.wed.Controllers
         {
             try
             {
+
+                LoadData();
+
                 if (!ModelState.IsValid)
                     return View(department);
 
-
+                
 
                 context.Departments.Add(new Department
                 {
-                    DepartmentID = department.DepartmentID,
+                    
                     Name = department.Name,
                     Budget = department.Budget,
-                    StartDate = department.StartDate
+                    StartDate = department.StartDate,
+                    InstructorID = department.InstructorID
 
                 });
+
                 context.SaveChanges();
-
-
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
             }
-
-            return View(department);
-
-
+            return View();
         }
+
 
         [HttpGet]
         public ActionResult Edit(int id)
         {
+            LoadData();
+
 
             var department = context.Departments.Where(x => x.DepartmentID == id)
-                           .Select(x => new DepartmentDTO
-                           {
-                               DepartmentID = x.DepartmentID,
-                               Name = x.Name,
-                               Budget = x.Budget,
-                               StartDate = x.StartDate
+                            .Select(x => new DepartmentDTO
+                            {
+                                DepartmentID = x.DepartmentID,
+                                Name = x.Name,
+                                Budget = x.Budget,
+                                StartDate = x.StartDate,
+                                InstructorID = x.InstructorID,
 
-                           }).FirstOrDefault();
-
+                            }).FirstOrDefault();
 
 
             return View(department);
         }
 
-
         [HttpPost]
         public ActionResult Edit(DepartmentDTO department)
         {
+
             try
             {
+                LoadData();
                 if (!ModelState.IsValid)
                     return View(department);
 
-
-                //var studentModel = context.Students.Where(x => x.ID == student.ID).Select(x => x).FirstOrDefault();
                 var departmentModel = context.Departments.FirstOrDefault(x => x.DepartmentID == department.DepartmentID);
 
-                //campos que se van a modificar
-                //sobreescribir las propiedades del modelo de base de datos
 
                 departmentModel.Name = department.Name;
                 departmentModel.Budget = department.Budget;
+                departmentModel.StartDate = department.StartDate;
+                departmentModel.InstructorID = department.InstructorID;
 
-                //aplicar los cambios en base de datos
+
                 context.SaveChanges();
-
-
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
             }
-
             return View(department);
-
-
         }
 
         [HttpGet]
         public ActionResult Delete(int id)
         {
-            if (!context.Departments.Any(x => x.InstructorID == id) && !context.CourseInstructors.Any(j => j.InstructorID == id) && !context.officeAssignments.Any(i => i.InstructorID == id))
-            {
-                var instructorModel = context.Instructors.FirstOrDefault(x => x.ID == id);
-                context.Instructors.Remove(instructorModel);
-                context.SaveChanges();
-            }
+            var departmentModel = context.Departments.FirstOrDefault(x => x.DepartmentID == id);
+            context.Departments.Remove(departmentModel);
+            context.SaveChanges();
+
             return RedirectToAction("Index");
+        }
+
+        private void LoadData()
+        {
+            var instructors = context.Instructors.Select(x => new InstructorDTO
+            {
+                ID = x.ID,
+                FirstMidName = x.FirstMidName,
+                LastName = x.LastName
+            }).ToList();
+            ViewData["Instructors"] = new SelectList(instructors, "ID", "FullName");
+
+
         }
     }
 }
