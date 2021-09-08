@@ -1,5 +1,6 @@
 ﻿@using PagedList.Mvc;
-@model PagedList.IPagedList<Universiti.BL.DTOs.InstructorDTO>
+@model PagedList.IPagedList<Universiti.BL.DTOs.DepartmentDTO>
+
 @{
     ViewBag.Title = "Index";
 }
@@ -9,7 +10,7 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-@using (Html.BeginForm("Index", "Students", FormMethod.Get))
+@using (Html.BeginForm("Index", "Departmente", FormMethod.Get))
 {
     <p>
         <select name="PageSize" id="Pagesize" class="form-control">
@@ -26,38 +27,37 @@
         <input type="submit" value="Aplicar" class="btn btn-primary" />
     </p>
 }
-<table class="table">
+<table class="table table-bordered">
     <tr>
+        <th>@Html.DisplayNameFor(model => model.DepartmentID)</th>
+        <th>@Html.DisplayNameFor(model => model.Name)</th>
         <th>
-           LastName
+            @Html.DisplayNameFor(model => model.Budget)
         </th>
         <th>
-            FirstMidName
+            @Html.DisplayNameFor(model => model.StartDate)
         </th>
-        <th>
-            HireDate
-        </th>
-
         <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+            <td>@Html.DisplayFor(modelItem => item.DepartmentID)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstMidName)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.HireDate)
+                @Html.DisplayFor(modelItem => item.Budget)
             </td>
-
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", "Instructors", new { id = item.ID })
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
     }
@@ -67,4 +67,4 @@
 Page @(Model.PageCount<Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount;
 <br />
 Total Item Count @Model.TotalItemCount
-@Html.PagedListPager(Model, page => Url.Action("Index", "Instructors", new { page, pageSize = ViewBag.PageSize }));
+@Html.PagedListPager(Model, page => Url.Action("Index", "Students", new { page, pageSize = ViewBag.PageSize }));

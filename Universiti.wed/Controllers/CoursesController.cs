@@ -17,7 +17,7 @@ namespace Universiti.wed.Controllers
 
 
         [HttpGet]
-        public ActionResult Index( int? pageSize, int? page)
+        public ActionResult Index(int? courseid, int? pageSize, int? page)
         {
 
             var query = context.Courses.ToList();
@@ -29,7 +29,25 @@ namespace Universiti.wed.Controllers
                 Credits = x.Credits
 
             }).ToList();
-          
+
+            if (courseid != null)
+            {
+
+                var instructors = (from c in context.CourseInstructors
+                               join i in context.Instructors on c.InstructorID equals i.ID
+                               where c.CourseID == courseid
+                               select new InstructorDTO
+                               {
+                                   ID = i.ID,
+                                   LastName = i.LastName,
+                                   FirstMidName = i.FirstMidName
+
+                               }).ToList();
+
+                ViewBag.Instructors = instructors;
+
+            }
+
 
             #region paginacion
             pageSize = (pageSize ?? 10);
